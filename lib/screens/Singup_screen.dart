@@ -160,7 +160,9 @@ class SignupScreen extends StatelessWidget {
                       children: [
                         Text("Already have an account? "),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
                           child: Text(
                             "Login",
                             style: TextStyle(
