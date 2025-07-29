@@ -1,5 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:reels_app_demo/data/user_data.dart';
 import 'package:reels_app_demo/reels/reels_view.dart';
 import 'package:reels_app_demo/screens/Forget_Password_Screen.dart';
 import 'package:reels_app_demo/screens/Singup_screen.dart';
@@ -8,28 +8,30 @@ import 'package:reels_app_demo/widgets/custom_wave_clipper.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final loginFormKey = GlobalKey<FormState>();
 
-  login(context) {
+  login(context) async {
     if (loginFormKey.currentState!.validate()) {
-      final email = usernameController.text;
-      final password = passwordController.text;
-
-      if (users.any(
-        (user) => user.email == email && user.password == password,
-      )) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => ReelsView()),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Invalid email or password')));
+      try {
+        final credential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+              email: emailController.text,
+              password: passwordController.text,
+            );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          print('Wrong password provided for that user.');
+        }
       }
     }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReelsView()),
+    );
   }
 
   signup(context) {
@@ -81,7 +83,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     customTextFormField(
-                      controller: usernameController,
+                      controller: emailController,
                       labelText: "Email",
                       hintText: 'Enter your email',
                       prefixIcon: Icons.email,

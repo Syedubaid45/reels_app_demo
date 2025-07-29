@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reels_app_demo/data/user_data.dart';
+import 'package:reels_app_demo/screens/Login_screen.dart';
 import 'package:reels_app_demo/widgets/custom_textFormField.dart';
 import 'package:reels_app_demo/widgets/custom_wave_clipper.dart';
 
@@ -11,16 +13,23 @@ class SignupScreen extends StatelessWidget {
   final confirmPasswordController = TextEditingController();
   final signupFormKey = GlobalKey<FormState>();
 
-  signup(context) {
+  signup(context) async {
     if (signupFormKey.currentState!.validate()) {
-      users.add(
-        User(
-          email: emailController.text.trim(),
-          username: usernameController.text.trim(),
-          password: passwordController.text,
-        ),
-      );
-
+      try {
+        final credential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+              email: emailController.text,
+              password: passwordController.text,
+            );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          print('The account already exists for that email.');
+        }
+      } catch (e) {
+        print(e);
+      }
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Signup successful!')));
@@ -161,7 +170,14 @@ class SignupScreen extends StatelessWidget {
                         Text("Already have an account? "),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return LoginScreen();
+                                },
+                              ),
+                            );
                           },
                           child: Text(
                             "Login",
