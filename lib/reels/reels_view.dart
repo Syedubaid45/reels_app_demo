@@ -7,14 +7,16 @@ class ReelsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: videos.length,
-        itemBuilder: (context, index) {
-          final video = videos[index];
-          return SimpleVideoPlayer(video: video);
-        },
+    return SafeArea(
+      child: Scaffold(
+        body: PageView.builder(
+          scrollDirection: Axis.vertical,
+          itemCount: videos.length,
+          itemBuilder: (context, index) {
+            final video = videos[index];
+            return SimpleVideoPlayer(video: video);
+          },
+        ),
       ),
     );
   }
