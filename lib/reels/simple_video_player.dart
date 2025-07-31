@@ -45,14 +45,10 @@ class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
 
     return Stack(
       children: [
-        SizedBox.expand(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: SizedBox(
-              width: _controller.value.size.width,
-              height: _controller.value.size.height,
-              child: VideoPlayer(_controller),
-            ),
+        Positioned.fill(
+          child: AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: VideoPlayer(_controller),
           ),
         ),
         Positioned(
@@ -60,7 +56,6 @@ class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
           right: 10,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
                 onPressed: () {},
@@ -84,31 +79,38 @@ class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
         Positioned(
           bottom: 20,
           left: 20,
-          right: 20, // prevent overflow by setting right constraint
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.video['videoTitle'] ?? '',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+          right: 80, // leaves space from the right icons
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SizedBox(
+                width: constraints.maxWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.video['videoTitle'] ?? '',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.video['description'] ?? '',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                widget.video['description'] ?? '',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            ],
+              );
+            },
           ),
         ),
       ],
