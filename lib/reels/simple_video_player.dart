@@ -3,7 +3,13 @@ import 'package:video_player/video_player.dart';
 
 class SimpleVideoPlayer extends StatefulWidget {
   final Map<String, String> video;
-  const SimpleVideoPlayer({super.key, required this.video});
+  final bool isPlaying;
+
+  const SimpleVideoPlayer({
+    super.key,
+    required this.video,
+    required this.isPlaying,
+  });
 
   @override
   State<SimpleVideoPlayer> createState() => _SimpleVideoPlayerState();
@@ -24,9 +30,22 @@ class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
     _controller = VideoPlayerController.network(url)
       ..initialize().then((_) {
         setState(() {});
-        _controller.play();
+
+        if (widget.isPlaying) {
+          _controller.play();
+        }
         _controller.setLooping(true);
       });
+  }
+
+  @override
+  void didUpdateWidget(covariant SimpleVideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPlaying && !_controller.value.isPlaying) {
+      _controller.play();
+    } else if (!widget.isPlaying && _controller.value.isPlaying) {
+      _controller.pause();
+    }
   }
 
   @override
