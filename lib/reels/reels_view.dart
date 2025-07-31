@@ -12,7 +12,8 @@ class ReelsView extends StatelessWidget {
         scrollDirection: Axis.vertical,
         itemCount: videos.length,
         itemBuilder: (context, index) {
-          return SimpleVideoPlayer(videoUrl: videos[index]['videoUrl']!);
+          final video = videos[index];
+          return SimpleVideoPlayer(video: video);
         },
       ),
     );
